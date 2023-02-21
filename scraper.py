@@ -10,6 +10,7 @@ def scrape(url):
     ingredients = soup.find_all("ul", {"class": "mntl-structured-ingredients__list"})
     for ing in ingredients:
         ingredient_list.append(ing.text.rstrip().split('\n'))
+    ingredient_list = [i.strip() for i in ingredient_list[0] if i]
     for step in steps:
         recipe_steps.append(step.p.text.rstrip()[1:])
     final = []
@@ -20,8 +21,7 @@ def scrape(url):
                 final.append(j)
         else:
             final.append(r)
-    print(ingredient_list)
-    return final
+    return (final, ingredient_list)
 
 scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
     
