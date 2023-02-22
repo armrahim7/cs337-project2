@@ -22,6 +22,19 @@ def scrape(url):
         else:
             final.append(r)
     return (final, ingredient_list)
+def cooking_words():
+    cook_words = []
+    page = requests.get("https://diannej.com/2013/100-action-verbs-from-julia-child-recipes/")
+    soup = bs(page.content, 'html.parser')
+    lst = soup.find_all("div", {"class":"entry-content"})[0]
+    # print(lst)
+    word_lst = lst.find_all("ol")[0]
+    words = word_lst.find_all("li")
+    for w in words:
+        cook_words.append(w.text.lower())
+    cook_words.extend(['add', 'place', 'microwave', 'defrost', 'thaw', 'refrigerate', 'freeze', 'chill', 'heat', 'cook', 'dice'])
+    return cook_words
 
-scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
+# scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
+# cooking_words()
     

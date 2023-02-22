@@ -1,7 +1,8 @@
 import spacy
-from scraper import scrape
+from scraper import scrape, cooking_words
 import nltk
 nlp = spacy.load('en_core_web_lg')
+cooking_library = cooking_words()
 def navigator(recipe):
     verbs = []
     for r in recipe:
