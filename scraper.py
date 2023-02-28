@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as bs
 import requests
+from recipe_scrapers import scrape_me
 def scrape(url):
     recipe_steps = []
     ingredient_list = []
@@ -32,9 +33,12 @@ def cooking_words():
     words = word_lst.find_all("li")
     for w in words:
         cook_words.append(w.text.lower())
-    cook_words.extend(['add', 'place', 'microwave', 'defrost', 'thaw', 'refrigerate', 'freeze', 'chill', 'heat', 'cook', 'dice'])
+    cook_words.extend(['add', 'bake', 'place', 'microwave', 'defrost', 
+    'thaw', 'refrigerate', 'freeze', 'chill', 'heat', 'cook', 'dice','preheat', 'pound','dip','layer'])
     return cook_words
 
-# scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
-# cooking_words()
+print(scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/"))
+#cooking_words()
+# print(scrape_me("https://www.allrecipes.com/recipe/223042/chicken-parmesan/").instructions_list())
+
     
