@@ -1,5 +1,4 @@
 import spacy
-from scraper import scrape, cooking_words
 import speech_recognition as sr
 from ingredient_parser import parse_ingredient
 from recipe_scrapers import scrape_me
@@ -60,7 +59,7 @@ def navigator(url):
     # print(steps_array)
     # print(parsed_ingredients)
     # print(separate_ingredients)
-    return steps_array
+    return [steps_array, parsed_ingredients]
 
 
 # navigator("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
