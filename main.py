@@ -1,16 +1,23 @@
 from navigator import navigator
+import webbrowser
 
 def main():
     url = input('Enter URL of recipe: ')
-    recipe = navigator(url)
+    recipe_obj = navigator(url)
+    recipe = recipe_obj[0]
+    ingredients_dict = recipe_obj[1]
+    ingredients = []
+    for i in ingredients_dict.keys():
+        ingredients.append(i + ', ' + ingredients_dict[i])
     boo = True
     curr = 0
     options = ['Options: \n',
                'Type next to go to next step.\n',
                'Type back to go to previous step.\n',
                'Type repeat to repeat current step.\n',
-               'Type how to get link to Google search on how to perform current step.\n',
+               'Type how to get link to a YouTube search on how to perform current step.\n',
                'Type help to show these options again. \n',
+               'Type ingredients to get a list of ingredients and their measurements. \n'
                'Type exit to exit program. \n']
     o = ''.join(options)
     print(o)
@@ -35,11 +42,13 @@ def main():
                 ings = '+'.join(recipe[curr][step]['ingredients'])
                 word = recipe[curr][step]['cooking words']
                 search = f'how+to+{word}+{ings}'
-                print(f'https://www.youtube.com/results?search_query={search}')
+                webbrowser.open(f'https://www.youtube.com/results?search_query={search}')
             else:
                 print('Cannot search this. Sorry. Please enter another command.')
         elif query == 'help':
             print(o)
+        elif query == 'ingredients':
+            print(ingredients)
         elif query == 'exit':
             print('Goodbye!')
             boo = False
