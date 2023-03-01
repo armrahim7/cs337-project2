@@ -4,10 +4,12 @@ import speech_recognition as sr
 from ingredient_parser import parse_ingredient
 from recipe_scrapers import scrape_me
 nlp = spacy.load('en_core_web_lg')
-cooking_library = cooking_words()
+# cooking_words()
+f = open('cook_words.txt', 'r')
+cooking_library = f.read().splitlines()
 rec = sr.Recognizer()
-recipe_dict = dict()
 useless_words = ['and', 'or']
+steps_array = []
 def navigator(url):
     recipe = scrape_me(url)
     instructions = recipe.instructions_list()
@@ -36,6 +38,8 @@ def navigator(url):
         else:
             parsed_ingredients[p['name']] = p['quantity'] + ' ' + p['unit']
     for r in final_instructions:
+        recipe_dict = dict()
+        recipe_obj = dict()
         verbs = []
         ings = []
         doc = nlp(r)
@@ -44,15 +48,19 @@ def navigator(url):
                 verbs.append(i)
             # if i.dep_ == 'dobj':
             #     ings.append(i)
-            if i.lemma_.lower() in separate_ingredients:
-                ings.append(i)
+            if (i.lemma_.lower() in separate_ingredients) and (i.lemma_.lower() not in ings):
+                ings.append(i.text)
+        recipe_obj['ingredients'] = ings
         if(len(verbs)):
-            recipe_dict[r] = [verbs[0],ings]
+            recipe_obj['cooking words'] = verbs[0]
         else:
-            recipe_dict[r] = [verbs, ings]
-    print(recipe_dict)
-    print(parsed_ingredients)
-    print(separate_ingredients)
+            recipe_obj['cooking words'] = verbs
+        recipe_dict[r] = recipe_obj
+        steps_array.append(recipe_dict)
+    # print(steps_array)
+    # print(parsed_ingredients)
+    # print(separate_ingredients)
+    return steps_array
 
 
-navigator("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
+# navigator("https://www.allrecipes.com/recipe/223042/chicken-parmesan/")
