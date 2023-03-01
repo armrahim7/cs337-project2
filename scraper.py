@@ -35,9 +35,11 @@ def cooking_words():
         cook_words.append(w.text.lower())
     cook_words.extend(['add', 'bake', 'place', 'microwave', 'defrost', 
     'thaw', 'refrigerate', 'freeze', 'chill', 'heat', 'cook', 'dice','preheat', 'pound','dip','layer'])
-    return cook_words
+    with(open('cook_words.txt', 'w')) as f:
+        for i in cook_words:
+            f.write(i + '\n')
 
-print(scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/"))
+# print(scrape("https://www.allrecipes.com/recipe/223042/chicken-parmesan/"))
 #cooking_words()
 # print(scrape_me("https://www.allrecipes.com/recipe/223042/chicken-parmesan/").instructions_list())
 
