@@ -39,7 +39,10 @@ def main():
             curr += 0
         elif query == 'how':
             if(len(recipe[curr][step]['ingredients'])) and (len(recipe[curr][step]['cooking words'])):
-                ings = '+'.join(recipe[curr][step]['ingredients'])
+                if(len(recipe[curr][step]['ingredients']))>1:
+                    ings = recipe[curr][step]['ingredients'][0] +'+'+'with'+'+'+'+'.join(recipe[curr][step]['ingredients'][1:])
+                else:
+                    ings = recipe[curr][step]['ingredients'][0]
                 word = recipe[curr][step]['cooking words']
                 search = f'how+to+{word}+{ings}'
                 webbrowser.open(f'https://www.youtube.com/results?search_query={search}')
