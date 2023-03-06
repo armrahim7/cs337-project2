@@ -1,5 +1,6 @@
-from navigator import navigator
+from navigator import *
 import webbrowser
+import re
 
 def main():
     url = input('Enter URL of recipe: ')
@@ -12,20 +13,30 @@ def main():
         ingredients.append(i + ', ' + ingredients_dict[i])
     boo = True
     curr = 0
+    prev= None
     options = ['Options: \n',
-               'Type next to go to next step.\n',
-               'Type back to go to previous step.\n',
-               'Type repeat to repeat current step.\n',
-               'Type how to get link to a YouTube search on how to perform current step.\n',
-               'Type help to show these options again. \n',
-               'Type ingredients to get a list of ingredients and their measurements. \n'
-               'Type exit to exit program. \n']
+               'Type "next" to go to next step.\n',
+               'Type "back" to go to previous step.\n',
+               'Type a number to go to that step. \n',
+               'Type "repeat" to repeat current step.\n',
+               'Type "how" to open a link to a YouTube search on how to perform current step.\n',
+               'Type "what temperature" to get the temperature needed for the current step.\n',
+               'Type "what is...(rest of your question)" to get a Google search for your general query.\n',
+               'Type "how to...(rest of your question)" to open a link to a YouTube search on your question.\n',
+               'Type "help" to show these options again. \n',
+               'Type "ingredients" to get a list of ingredients and their measurements. \n'
+               'Type "exit" to exit program. \n']
     o = ''.join(options)
     print(o)
     while(boo):
-        step = list(recipe[curr].keys())[0]
-        print(f'Step {curr+1}: ' + step)
-        query = input('Please enter a command. \n')
+        if prev == curr:
+            query= input('How else can I help? \n')
+            step = list(recipe[curr].keys())[0]
+        else:
+            step = list(recipe[curr].keys())[0]
+            print(f'Step {curr+1}: ' + step)
+            query = input('Please enter a command. \n')
+        prev = curr
         if query == 'next':
             if curr==(len(recipe)-1):
                 print('This is the end of the recipe. Please enter another command.')
@@ -36,19 +47,35 @@ def main():
                 print('This is the beginning of the recipe. Please enter another command.')
             else:
                 curr-=1
+        elif query.isnumeric():
+            if(int(query)>len(recipe) or int(query)<1):
+                print('Invalid step number. Please enter a valid step number.')
+            else:
+                curr = int(query)-1
         elif query == 'repeat':
             curr += 0
         elif query == 'how':
             if(len(recipe[curr][step]['ingredients'])) and (len(recipe[curr][step]['cooking words'])):
-                if(len(recipe[curr][step]['ingredients']))>1:
-                    ings = recipe[curr][step]['ingredients'][0] +'+'+'with'+'+'+'+'.join(recipe[curr][step]['ingredients'][1:])
-                else:
-                    ings = recipe[curr][step]['ingredients'][0]
+                if(len(recipe[curr][step]['ingredients'])):
+                    ings = '+'.join(recipe[curr][step]['ingredients'])
                 word = recipe[curr][step]['cooking words']
                 search = f'how+to+{word}+{ings}'
                 webbrowser.open(f'https://www.youtube.com/results?search_query={search}')
             else:
-                print('Cannot search this. Sorry. Please enter another command.')
+                quer = '+'.join(list(recipe[curr].keys())[0].split())
+                webbrowser.open(f'https://www.youtube.com/results?search_query=how+to+{quer}')
+        elif query == 'what temperature':
+            temp = recipe[curr][step]['temperature']
+            if(temp):
+                print(temp)
+            else:
+                print('Sorry the current step does not have any temperature related tasks.')
+        elif query.startswith('what is'):
+            q = '+'.join(query.split())
+            webbrowser.open(f'https://www.google.com/search?q={q}')
+        elif query.startswith('how to'):
+            q = '+'.join(query.split())
+            webbrowser.open(f'https://www.youtube.com/results?search_query={q}')
         elif query == 'help':
             print(o)
         elif query == 'ingredients':
@@ -71,20 +98,39 @@ def main():
                 else:
                     print('Sorry, I am unable to help with this')
             elif 'how much' in query:
-                sol= None
+                found= False
+                found_ing = None
                 for ing in recipe[curr][step]['ingredients']:
-                    if ing in query and sol == None:
-                        if ing in ingredients_dict.keys():
-                            sol=ingredients_dict[ing]
-                        else:
-                            for mat in ingredients_dict.keys():
-                                if ing in mat :
-                                    sol=ingredients_dict[mat]               
-                if sol is not None:
-                    print(sol)
+                    if ing in query and ing in step.lower() and not found:
+                        found=True
+                        found_ing = ing
+                        new_step = step.replace(",", "")
+                        spl = new_step.split()
+                        ans = []
+                        bool = False
+                        try:
+                            ind = spl.index(ing)
+                            for i in reversed(range(ind)):
+                                new_spl = spl[i].replace("/", "")
+                                if new_spl.isnumeric():
+                                    ans.append(spl[i])
+                                    bool = True
+                                    break
+                                else:
+                                    ans.append(spl[i])
+                        except:
+                            print('Sorry I cannot help with that')
+                if(found and (not bool)):
+                    if found_ing in ingredients_dict.keys():
+                        print(ingredients_dict[found_ing])
+                    else:
+                        for mat in ingredients_dict.keys():
+                            if found_ing in mat :
+                              print(ingredients_dict[mat])
+                elif(bool):
+                    print(' '.join(ans))
                 else:
-                    print('Sorry, I am unable to help with this')
-
+                    print('Sorry the ingredient is not in this step.')
         elif query == 'exit':
             print('Goodbye!')
             boo = False
