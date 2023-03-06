@@ -7,6 +7,7 @@ def main():
     recipe = recipe_obj[0]
     ingredients_dict = recipe_obj[1]
     ingredients = []
+    hard_coded=['next','back','repeat','how','help','ingredients','exit']
     for i in ingredients_dict.keys():
         ingredients.append(i + ', ' + ingredients_dict[i])
     boo = True
@@ -52,6 +53,38 @@ def main():
             print(o)
         elif query == 'ingredients':
             print(ingredients)
+        elif query not in hard_coded :
+            query = query.lower()
+            if 'how long' in query:
+                sol=None
+                doc = nlp(step)
+                prev= False
+                for i in doc:
+                    if i.pos_ == 'NUM':
+                        prev=i.text
+                    if prev:
+                        if 'minute' in i.text or 'hour'in i.text:
+                            sol = prev + ' ' + i.text
+                            prev= False
+                if sol is not None:
+                    print(sol)
+                else:
+                    print('Sorry, I am unable to help with this')
+            elif 'how much' in query:
+                sol= None
+                for ing in recipe[curr][step]['ingredients']:
+                    if ing in query and sol == None:
+                        if ing in ingredients_dict.keys():
+                            sol=ingredients_dict[ing]
+                        else:
+                            for mat in ingredients_dict.keys():
+                                if ing in mat :
+                                    sol=ingredients_dict[mat]               
+                if sol is not None:
+                    print(sol)
+                else:
+                    print('Sorry, I am unable to help with this')
+
         elif query == 'exit':
             print('Goodbye!')
             boo = False
